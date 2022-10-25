@@ -75,14 +75,26 @@ data2
 ```
 
 ```{r}
-
+#merge the two data sets to correspond with the larger data set
+datacomb <- merge(data2, datawide)
+datacomb
 ```
 
+```{r}
+path3 <- "C:/Users/caleb/OneDrive/Documents/Courses/2022 Semester 2/BIOL3207/BIOL3207_Assignment_2/Assignment_2/ocean_meta_data.csv"
 
+data3 <- read_csv(path3)
+data3
+```
 
+```{r}
+datafinal <- rbind(data3, datacomb)
+datafinal
+```
 
-
-
+```{r}
+zr_data <- escalc
+```
 
 
 
