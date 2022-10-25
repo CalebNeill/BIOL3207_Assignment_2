@@ -8,23 +8,89 @@ date: "2022-10-24"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+library(GGally)
+library(rstatix)
+library(pacman)
+```
 
+```{r}
+path <- "C:/Users/caleb/OneDrive/Documents/Courses/2022 Semester 2/BIOL3207/BIOL3207_Assignment_2/Assignment_2/OA_activitydat_20190302_BIOL3207.csv"
 
+  
+data <- read_csv(path)
+```
 
+```{r}
+#tidying up the data by removal irrelevant columns
+drop <- c("comment", "loc")
+data <- data[!(names(data) %in% drop)]
+```
 
+```{r}
+#checking spelling of each species and treatment
+categories1 <- unique(data$species)
+categories1
 
+categories2 <- unique(data$treatment)
+categories2
+```
 
+```{r}
+#summarising the data
+dataft <- data %>%
+  drop_na %>%
+  group_by(species, treatment) %>%
+  summarise(
+    n = n(),
+    mean = mean(activity),
+    sd = sd(activity)
+  )
 
+flextable(dataft)
+```
 
+```{r}
+path2 <- "C:/Users/caleb/OneDrive/Documents/Courses/2022 Semester 2/BIOL3207/BIOL3207_Assignment_2/Assignment_2/clark_paper_data.csv"
 
+data2 <- read_csv(path2)
+```
 
+```{r}
+head(data)
+head(data2)
+```
 
+```{r}
+#adjusting data to fit into metadata
+dataft
 
+dfwide <- pivot_wider(data, names_from = treatment, values_from = activity)
+dfwide
+```
 
+```{r}
+data2 <- dfwide %>%
+  group_by(species) %>%
+  summarise(
+    ctrl.n = n(control),
+    ctrl.mean = mean(control),
+    ctrl.sd = sd(control),
+    oa.n = n(CO2),
+    oa.mean = mean(CO2),
+    oa.sd = sd(CO2),
+    na.rm = TRUE
+  )
+```
 
-
-
-
+```{r}
+data
+```
 
 
 
