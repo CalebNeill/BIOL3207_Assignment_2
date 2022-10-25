@@ -56,40 +56,26 @@ flextable(dataft)
 ```
 
 ```{r}
+#tidying data to fit into metadata layout
+dataft[dataft == "control"] <- "ctrl"
+dataft[dataft == "CO2"] <- "oa"
+colnames(dataft)[1] <- "Species"
+
+datalong <- pivot_longer(dataft, col = 3:5, names_to = "stat", values_to = "value")
+datawide <- pivot_wider(datalong, names_from = c(treatment, stat), values_from = value, names_sep = ".")
+datawide
+```
+
+```{r}
+#import meta data from clark et al report
 path2 <- "C:/Users/caleb/OneDrive/Documents/Courses/2022 Semester 2/BIOL3207/BIOL3207_Assignment_2/Assignment_2/clark_paper_data.csv"
 
 data2 <- read_csv(path2)
+data2
 ```
 
 ```{r}
-head(data)
-head(data2)
-```
 
-```{r}
-#adjusting data to fit into metadata
-dataft
-
-dfwide <- pivot_wider(data, names_from = treatment, values_from = activity)
-dfwide
-```
-
-```{r}
-data2 <- dfwide %>%
-  group_by(species) %>%
-  summarise(
-    ctrl.n = n(control),
-    ctrl.mean = mean(control),
-    ctrl.sd = sd(control),
-    oa.n = n(CO2),
-    oa.mean = mean(CO2),
-    oa.sd = sd(CO2),
-    na.rm = TRUE
-  )
-```
-
-```{r}
-data
 ```
 
 
