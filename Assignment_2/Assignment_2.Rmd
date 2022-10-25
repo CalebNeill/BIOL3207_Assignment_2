@@ -17,6 +17,7 @@ library(ggplot2)
 library(GGally)
 library(rstatix)
 library(pacman)
+library(metafor)
 ```
 
 ```{r}
@@ -93,7 +94,22 @@ datafinal
 ```
 
 ```{r}
-zr_data <- escalc
+corr_val <- cor(datafinal$ctrl.mean, datafinal$oa.mean)
+corr_val
+
+datafinal %>% ggplot(mapping = aes(x = ctrl.mean, y = oa.mean)) +
+  geom_point()
+```
+
+```{r}
+zr_data <- escalc(meaure = "ROMC", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = )
+
+escalc(measure, ai, bi, ci, di, n1i, n2i, x1i, x2i, t1i, t2i,
+       m1i, m2i, sd1i, sd2i, xi, mi, ri, ti, sdi, r2i, ni, yi, vi, sei,
+       data, slab, subset, include,
+       add=1/2, to="only0", drop00=FALSE, vtype="LS",
+       var.names=c("yi","vi"), add.measure=FALSE,
+       append=TRUE, replace=TRUE, digits, ...)
 ```
 
 
