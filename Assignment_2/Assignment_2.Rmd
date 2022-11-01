@@ -96,18 +96,6 @@ datafinal
 ```
 
 ```{r}
-#calculating standard error of each report
-dfzr <- cbind(datafinal, zr = NA)
-
-for(i in 1:nrow(datafinal))
-  {
-  dfzr$zr[i] <- escalc(data = datafinal, measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2 = oa.sd, var.names = c("Zr", "V_Zr"))
-}
-
-dfzr
-```
-
-```{r}
 zr_data <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2 = oa.sd, data = datafinal, var.names = c("Zr", "V_Zr"), append = TRUE)
 
 zr_data
@@ -126,8 +114,9 @@ dftest
 ```
 
 ```{r}
-escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2 = oa.sd, data = dftest, var.names = c("Zr", "V_Zr"), append = TRUE)
+escalctest <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, data = dftest)
 
+dftest <- cbind(dftest, yi = escalctest$yi, vi = escalctest$vi)
 dftest
 ```
 
