@@ -109,20 +109,29 @@ which(datafinal$ctrl.mean <=0 & datafinal$oa.mean > 0 | datafinal$ctrl.mean > 0 
 ```
 
 ```{r}
-dftest <- datafinal[!(datafinal$ctrl.mean <=0 & datafinal$oa.mean > 0 | datafinal$ctrl.mean > 0 & datafinal$oa.mean <= 0),]
-dftest
+dfeffect <- datafinal[!(datafinal$ctrl.mean <=0 & datafinal$oa.mean > 0 | datafinal$ctrl.mean > 0 & datafinal$oa.mean <= 0),]
+dfeffect
 ```
 
 ```{r}
-escalctest <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, data = dftest)
+escalcfunc <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, data = dftest)
 
-dftest <- cbind(dftest, yi = escalctest$yi, vi = escalctest$vi)
-dftest
+dfeffect <- cbind(dfeffect, effect.size = escalcfunc$yi, sampling.variance = escalcfunc$vi)
+dfeffect
 ```
 
+```{r}
+#I attempted to adjust the values of different signs but was unsuccessful and the code just wouldn't work. Furthermore, how is the ctrl group for reports that tested against a baseline not equal to close to 0? As such I left them removed from the escalc function
+```
 
+```{r}
+names(dfeffect)[names(dfeffect) == "Behavioural metric"] <- "Behavioural.metric"
+```
 
-
+```{r}
+MA <- rma.mv(effect.size ~ 1, V = sampling.variance, method = "REML", random = list(~1 | Study/Behavioural.metric), dfs = "contain", test = "t", data = dfeffect)
+MA
+```
 
 
 
