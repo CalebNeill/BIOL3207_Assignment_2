@@ -129,11 +129,12 @@ names(dfeffect)[names(dfeffect) == "Behavioural metric"] <- "Behavioural.metric"
 ```
 
 ```{r}
-MA <- rma.mv(effect.size ~ 1, V = sampling.variance, method = "REML", random = list(~1 | Study/Behavioural.metric), dfs = "contain", test = "t", data = dfeffect)
+#meta-analytic model using the effect size and sampling variance of the escalc function. Random effect of the studies and within the studies using the species and behavioural metric within the species was used.
+MA <- rma.mv(effect.size ~ 1, V = sampling.variance, method = "REML", random = list(~1 | Study/Species/Behavioural.metric), dfs = "contain", test = "t", data = dfeffect)
 MA
 ```
 
-
+THE...
 
 
 
