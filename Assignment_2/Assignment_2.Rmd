@@ -18,6 +18,8 @@ library(GGally)
 library(rstatix)
 library(pacman)
 library(metafor)
+library(flextable)
+library(esc)
 ```
 
 ```{r}
@@ -94,32 +96,40 @@ datafinal
 ```
 
 ```{r}
-corr_val <- cor(datafinal$ctrl.mean, datafinal$oa.mean)
-corr_val
+#calculating standard error of each report
+dfzr <- cbind(datafinal, zr = NA)
 
-datafinal %>% ggplot(mapping = aes(x = ctrl.mean, y = oa.mean)) +
-  geom_point()
+for(i in 1:nrow(datafinal))
+  {
+  dfzr$zr[i] <- escalc(data = datafinal, measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2 = oa.sd, var.names = c("Zr", "V_Zr"))
+}
+
+dfzr
 ```
 
 ```{r}
-zr_data <- escalc(meaure = "ROMC", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = )
+zr_data <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2 = oa.sd, data = datafinal, var.names = c("Zr", "V_Zr"), append = TRUE)
 
-escalc(measure, ai, bi, ci, di, n1i, n2i, x1i, x2i, t1i, t2i,
-       m1i, m2i, sd1i, sd2i, xi, mi, ri, ti, sdi, r2i, ni, yi, vi, sei,
-       data, slab, subset, include,
-       add=1/2, to="only0", drop00=FALSE, vtype="LS",
-       var.names=c("yi","vi"), add.measure=FALSE,
-       append=TRUE, replace=TRUE, digits, ...)
+zr_data
 ```
 
+```{r}
+which(datafinal$ctrl.mean <= 0)
+which(datafinal$oa.mean <= 0)
 
+which(datafinal$ctrl.mean <=0 & datafinal$oa.mean > 0 | datafinal$ctrl.mean > 0 & datafinal$oa.mean <= 0)
+```
 
+```{r}
+dftest <- datafinal[!(datafinal$ctrl.mean <=0 & datafinal$oa.mean > 0 | datafinal$ctrl.mean > 0 & datafinal$oa.mean <= 0),]
+dftest
+```
 
+```{r}
+escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2 = oa.sd, data = dftest, var.names = c("Zr", "V_Zr"), append = TRUE)
 
-
-
-
-
+dftest
+```
 
 
 
