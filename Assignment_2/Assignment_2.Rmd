@@ -8,7 +8,8 @@ date: "2022-10-24"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, include=FALSE}
+#packages needed to conduct the meta analysis
 library(tidyverse)
 library(readxl)
 library(tidyverse)
@@ -22,6 +23,7 @@ library(flextable)
 library(esc)
 ```
 
+## Combine the data with the overall meta analysis
 ```{r}
 path <- "C:/Users/caleb/OneDrive/Documents/Courses/2022 Semester 2/BIOL3207/BIOL3207_Assignment_2/Assignment_2/OA_activitydat_20190302_BIOL3207.csv"
 
@@ -91,30 +93,32 @@ data3
 ```
 
 ```{r}
+#combine the data into one final dataframe
 datafinal <- rbind(data3, datacomb)
 datafinal
 ```
 
-```{r}
+## Meta analysis
+```{r, include=FALSE}
 zr_data <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2 = oa.sd, data = datafinal, var.names = c("Zr", "V_Zr"), append = TRUE)
 
 zr_data
 ```
+NaNs produced, which code is needed to prevent
 
 ```{r}
-which(datafinal$ctrl.mean <= 0)
-which(datafinal$oa.mean <= 0)
-
 which(datafinal$ctrl.mean <=0 & datafinal$oa.mean > 0 | datafinal$ctrl.mean > 0 & datafinal$oa.mean <= 0)
 ```
 
-```{r}
+```{r, include=FALSE}
+#removal of data that caused functions to not work. After many attempts, decision was made to continue with project disregarding roughly 10% of the data which is not ideal but more time was necessary despite the amount of time invested in the analysis
 dfeffect <- datafinal[!(datafinal$ctrl.mean <=0 & datafinal$oa.mean > 0 | datafinal$ctrl.mean > 0 & datafinal$oa.mean <= 0),]
 dfeffect
 ```
 
-```{r}
-escalcfunc <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, data = dftest)
+```{r, include=FALSE}
+#calculating effect size of the studies meta data
+escalcfunc <- escalc(measure = "ROM", n1i = ctrl.n, n2i = oa.n, m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, data = dfeffect)
 
 dfeffect <- cbind(dfeffect, effect.size = escalcfunc$yi, sampling.variance = escalcfunc$vi)
 dfeffect
@@ -138,21 +142,22 @@ MA
 The meta-analytic model fitted to the data conveys the overall meta-analytic mean effect size to be -0.1312 between the studies. The confidence intervals are -0.3555 and 0.0932, meaning there is a 95% confidence that the true mean of the studies to fall within this range. This means that there is no significance between the studies as shown by the p value being 0.2486 (>0.1). The null hypothesis cannot be rejected since 0 lies within the measures of uncertainty around the mean estimate.
 
 ```{r}
+#heterogeneity of effect size using prediction intervals
 predict(MA)
 ```
 The prediction intervals of the meta-analytic model are -4.3430 and 4.0807. This is the expected variation of effect sizes over the studies and the 95% confidence that a new study will fall within this range, the heterogeneity of the results.
 
-```{r}
-
-```
 
 
 ```{r}
+#funnel plot
 dfeffect %>% filter(dfeffect$sampling.variance > 0.00001) %>%
   funnel(x = dfeffect$effect.size, vi = dfeffect$sampling.variance, yaxis = "vinv", digits = 2, level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray75"), las = 1, xlab = "Correlation Coefficient (r)", atransf = tanh, legend = TRUE, ylim = c(0.1, 1000), xlim = c(-1, 1))
 ```
+The studies within the confidence intervals are indicative of sampling variations accounting for the differences in effect size. As such, studies outside the zone are significant in their findings. Due to the non-lack of studies on either side of the funnel, it can be determined that there is no file drawer effect in place since it is evenly spread and not skewed due to bias.
 
 ```{r}
+#time lag plot
 dfeffect %>% filter(dfeffect$sampling.variance > 0.00001) %>%
   ggplot(aes(y = effect.size, x = Year.Pub, size = 1/sqrt(sampling.variance))) +
   geom_point(alpha = 0.3) +
@@ -162,11 +167,13 @@ dfeffect %>% filter(dfeffect$sampling.variance > 0.00001) %>%
 ```
 
 ```{r}
+#meta regression model for time lag bias
 metareg_time <- rma.mv(effect.size ~ Year.Pub, V = sampling.variance, random = list(~1 | Study/Species/Behavioural.metric), test = "t", dfs = "contain", data = dfeffect)
 metareg_time
 ```
 
 ```{r}
+#meta regression model for both time lag and file drawer bias
 dfeffect_c <- dfeffect
 dfeffect_c <- dfeffect_c %>%
   mutate(Year_c = Year.Pub - mean(Year.Pub))
@@ -175,26 +182,15 @@ metareg_file <- rma.mv(effect.size ~ Year_c + sampling.variance, V = sampling.va
 metareg_file
 ```
 
+From the multilevel meta-regression results, there appears to be no evidence for lag-time regression, since the effect size appears to increase through the publication years. This is conveyed by the positive estimate for the year_c results from the analysis, ignoring the significant p value since the lag time regression only applies for decreasing effect sizes over time.
 
+There is also no file drawer biases in the studies, demonstrated by the non-significant p value for the sampling variance. This is justified further by the funnel plot, with even distribution across the x axis demonstrating no bias due to a result given.
 
+The intercept is a negative intercept despite the positive time lag result, indicating a significant bias that is contributing to the overall data and conclusion of ocean acidification.
 
+## Conclusion
+From the meta analysis conducted by Clements et al., it can be concluded that the studies that have low sample sizes are to be the main contributing factor to publication bias within the meta data provided. The large differences in species and the metrics used to measure changes with varying degrees of ocean acidification have low sample sizes, and as such account for a large bias as they are published in high impact journals.
 
+Further anlysis of the meta data is required to accurately determine the results of the ocean acidification research and conclusions.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+https://github.com/CalebNeill/BIOL3207_Assignment_2
