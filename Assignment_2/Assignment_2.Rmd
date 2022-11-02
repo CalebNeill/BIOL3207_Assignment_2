@@ -135,7 +135,17 @@ MA <- rma.mv(effect.size ~ 1, V = sampling.variance, method = "REML", random = l
 MA
 ```
 
-THE...
+The meta-analytic model fitted to the data conveys the overall meta-analytic mean effect size to be -0.1312 between the studies. The confidence intervals are -0.3555 and 0.0932, meaning there is a 95% confidence that the true mean of the studies to fall within this range. This means that there is no significance between the studies as shown by the p value being 0.2486 (>0.1). The null hypothesis cannot be rejected since 0 lies within the measures of uncertainty around the mean estimate.
+
+```{r}
+predict(MA)
+```
+The prediction intervals of the meta-analytic model are -4.3430 and 4.0807. This is the expected variation of effect sizes over the studies and the 95% confidence that a new study will fall within this range, the heterogeneity of the results.
+
+```{r}
+
+```
+
 
 ```{r}
 dfeffect %>% filter(dfeffect$sampling.variance > 0.00001) %>%
