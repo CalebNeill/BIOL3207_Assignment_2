@@ -126,6 +126,7 @@ dfeffect
 
 ```{r}
 names(dfeffect)[names(dfeffect) == "Behavioural metric"] <- "Behavioural.metric"
+names(dfeffect)[names(dfeffect) == "Year (online)"] <- "Year.Pub"
 ```
 
 ```{r}
@@ -136,9 +137,19 @@ MA
 
 THE...
 
+```{r}
+dfeffect %>% filter(dfeffect$sampling.variance > 0.00001) %>%
+  funnel(x = dfeffect$effect.size, vi = dfeffect$sampling.variance, yaxis = "vinv", digits = 2, level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray75"), las = 1, xlab = "Correlation Coefficient (r)", atransf = tanh, legend = TRUE, ylim = c(0.1, 1000), xlim = c(-1, 1))
+```
 
-
-
+```{r}
+dfeffect %>% filter(dfeffect$sampling.variance > 0.00001) %>%
+  ggplot(aes(y = effect.size, x = Year.Pub, size = 1/sqrt(sampling.variance))) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = lm, col = "red", show.legend = FALSE) +
+  labs(x = "Publication Year", y = "Effect Size", size = "Precision (1/SE)") +
+  theme_classic()
+```
 
 
 
