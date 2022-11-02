@@ -151,9 +151,19 @@ dfeffect %>% filter(dfeffect$sampling.variance > 0.00001) %>%
   theme_classic()
 ```
 
+```{r}
+metareg_time <- rma.mv(effect.size ~ Year.Pub, V = sampling.variance, random = list(~1 | Study/Species/Behavioural.metric), test = "t", dfs = "contain", data = dfeffect)
+metareg_time
+```
 
+```{r}
+dfeffect_c <- dfeffect
+dfeffect_c <- dfeffect_c %>%
+  mutate(Year_c = Year.Pub - mean(Year.Pub))
 
-
+metareg_file <- rma.mv(effect.size ~ Year_c + sampling.variance, V = sampling.variance, random = list(~1 | Study/Species/Behavioural.metric), test = "t", dfs = "contain", data = dfeffect_c)
+metareg_file
+```
 
 
 
